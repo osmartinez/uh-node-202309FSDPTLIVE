@@ -1,19 +1,21 @@
 const express = require('express')
-
 const router = express.Router()
 
-const Producto = require('../models/producto.model')
+const { buscarTodos, buscarPorId, crearProducto, eliminarProducto, modificarProducto } = require('../controllers/producto.controller')
 
-const productos = [{ id: 1, nombre: 'lavadora   ', marca: 'bosch', ref: '0101020023L' }]
+const {validarCrearProducto} = require('../helpers/validadores')
 
 router.get("/", async (req, res) => {
-    const productos = await Producto.find()
-
+    //antes
+    // const productos = await Producto.find()
+    
+    //despues
+    const productos = await buscarTodos()
     res.json(productos)
 })
 
 router.get("/:id", async (req, res) => {
-    const objetoEncontrado = await Producto.findById(req.params.id)
+    const objetoEncontrado = await buscarPorId(req.params.id)
     if (objetoEncontrado !== undefined) {
         res.json(objetoEncontrado)
     }
@@ -23,22 +25,17 @@ router.get("/:id", async (req, res) => {
 })
 
 router.post("/", async (req, res) => {
-    // generar el objeto
-    const nuevoProducto = new Producto({
-        marca: req.body.marca.trim(),
-        nombre: req.body.nombre.trim(),
-        modelo: req.body.modelo,
-    })
+    await crearProducto(
+        req.body.nombre.trim(),
+        req.body.marca.trim(),
+        req.body.modelo.trim())
 
-    // guardarlo
-    await nuevoProducto.save()
 
     res.json({ msg: 'producto creado correctamente' })
 })
 
 router.delete("/:id", async (req, res) => {
-    const productoBorrado = await Producto.findByIdAndDelete(req.params.id)
-    //equivale a comparar con !== undefined && productoBorrado !== null
+    const productoBorrado = await eliminarProducto(req.params.id)
     if (productoBorrado) {
         res.json({ msg: 'producto borrado!' })
     }
@@ -59,14 +56,16 @@ router.put("/:id", async (req, res) => {
     let encontrado = null
     let msg = []
     // tengo que comprobar que todos los atributos que se pueden tocar, vienen al completo
-    if (req.body.marca === undefined
-        || req.body.marca.trim() === ""
-        || req.body.nombre === undefined
-        || req.body.nombre.trim() === "") {
-        res.json({ msg: 'No se han proporcionado todos los valores' })
+    const resultadoValidacion = validarCrearProducto(req.body)
+    if(!resultadoValidacion.valido){
+        res.json({ msg: resultadoValidacion.mensaje })
     }
     else {
-        encontrado = await Producto.findByIdAndUpdate(req.params.id, req.body)
+        encontrado = await modificarProducto(
+            req.params.id,
+            req.body.nombre.trim(),
+            req.body.marca.trim(),
+            req.body.modelo.trim())
 
         res.json(encontrado === null ? { msg: 'error: producto no encontrado' } : { dato: encontrado, mensajes: msg })
     }
@@ -80,7 +79,11 @@ router.patch("/:id", async (req, res) => {
     let msg = []
 
     // solamente varío los atributos que yo considero que se podrían tocar
-    encontrado = await Producto.findByIdAndUpdate(req.params.id, req.body)
+    encontrado = await modificarProducto(
+        req.params.id,
+        req.body.nombre.trim(),
+        req.body.marca.trim(),
+        req.body.modelo.trim())
 
     res.json(encontrado === null ? { msg: 'error: producto no encontrado' } : { dato: encontrado, mensajes: msg })
 
