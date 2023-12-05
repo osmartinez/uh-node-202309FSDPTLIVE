@@ -3,25 +3,37 @@ const router = express.Router()
 
 const { buscarTodos, buscarPorId, crearProducto, eliminarProducto, modificarProducto } = require('../controllers/producto.controller')
 
-const {validarCrearProducto} = require('../helpers/validadores')
+const { validarCrearProducto } = require('../helpers/validadores')
 
 router.get("/", async (req, res) => {
-    //antes
-    // const productos = await Producto.find()
-    
-    //despues
-    const productos = await buscarTodos()
-    res.json(productos)
+    try {
+        const productos = await buscarTodos()
+        res.json(productos)
+    } catch (error) {
+        // logging
+        console.log(String(error))
+        res.status(500).json({msg: "error interno "})
+    }
+   
 })
 
+//electrosa.com/login -> acceder los clientes
+//electrosa.com/admin -> acceder los administradores
+
 router.get("/:id", async (req, res) => {
-    const objetoEncontrado = await buscarPorId(req.params.id)
-    if (objetoEncontrado !== undefined) {
-        res.json(objetoEncontrado)
+    try {
+        const objetoEncontrado = await buscarPorId(req.params.id)
+        if (objetoEncontrado) {
+            res.json(objetoEncontrado)
+        }
+        else {
+            res.status(404).json({ msg: 'error: producto no encontado' })
+        }
+    } catch (error) {
+        res.status(500).json({msg: 'error interno'+String(error)})
     }
-    else {
-        res.json({ msg: 'error: producto no encontado' })
-    }
+
+
 })
 
 router.post("/", async (req, res) => {
@@ -43,7 +55,7 @@ router.delete("/:id", async (req, res) => {
         res.json({ msg: 'error: producto no encontrado' })
     }
 })
-
+// google.com/oscar
 // CRUD
 /**
  * C: CREATE - POST
@@ -57,8 +69,8 @@ router.put("/:id", async (req, res) => {
     let msg = []
     // tengo que comprobar que todos los atributos que se pueden tocar, vienen al completo
     const resultadoValidacion = validarCrearProducto(req.body)
-    if(!resultadoValidacion.valido){
-        res.json({ msg: resultadoValidacion.mensaje })
+    if (!resultadoValidacion.valido) {
+        res.status(400).json({ msg: resultadoValidacion.mensaje })
     }
     else {
         encontrado = await modificarProducto(

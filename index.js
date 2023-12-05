@@ -11,11 +11,12 @@ app.use(bodyParser.json())
 
 
 
-mongoose.connect('mongodb+srv://itsosmartinez:cy8pzsQ0wXJgxJf2@cluster0.fabyljk.mongodb.net/electrosa',{
+mongoose.connect('mongodb+srv://itsosmartine:cy8pzsQ0wXJgxJf2@cluster0.fabyljk.mongodb.net/electrosa',{
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
-  .then(() => console.log('Conectado a base de datos!'));
+  .then(() => console.log('Conectado a base de datos!'))
+  .catch(err=> console.log('err'));
 
 
 
