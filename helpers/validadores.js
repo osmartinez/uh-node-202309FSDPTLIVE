@@ -1,5 +1,5 @@
 
-function validarCrearProducto(body){
+function validarCrearProducto(body) {
     if (body.marca === undefined
         || body.marca.trim() === ""
         || body.nombre === undefined
@@ -9,7 +9,23 @@ function validarCrearProducto(body){
             mensaje: "falta nombre o marca"
         }
     }
-    else{
+    else {
+        return {
+            valido: true,
+            mensaje: null,
+        }
+    }
+}
+
+function validarCrearUsuario(body) {
+    if (body.email === undefined || body.email.trim() === ""
+    ) {
+        return {
+            valido: false,
+            mensaje: "falta el email"
+        }
+    }
+    else {
         return {
             valido: true,
             mensaje: null,
@@ -19,4 +35,5 @@ function validarCrearProducto(body){
 
 module.exports = {
     validarCrearProducto,
+    validarCrearUsuario,
 }
