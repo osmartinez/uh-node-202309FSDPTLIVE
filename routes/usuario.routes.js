@@ -2,35 +2,31 @@ const express = require('express')
 
 const router = express.Router()
 
-const Usuario = require('../models/usuario.model')
+const { buscarPorId, buscarTodos, crearUsuario } = require('../controllers/usuario.controller')
 
 router.get("/", async (req, res) => {
-    const usuarios = await Usuario.find()
+    const usuarios = await buscarTodos()
     res.json(usuarios)
 })
 
 router.get("/:id", async (req, res) => {
-    const usuarioEncontrado = await Usuario.findById(req.params.id)
-    if(usuarioEncontrado){
+    const usuarioEncontrado = await buscarPorId(req.params.id)
+    if (usuarioEncontrado) {
         res.json(usuarioEncontrado)
     }
-    else{
-        res.json({msg: "error: usuario no encontado"})    
-    }  
+    else {
+        res.json({ msg: "error: usuario no encontado" })
+    }
 })
 
-router.post("/", async (req,res)=>{
-    if( req.body.email === undefined || req.body.email.trim() === ""){
-        res.json({msg: "error: email no proporcionado"})
+router.post("/", async (req, res) => {
+    if (req.body.email === undefined || req.body.email.trim() === "") {
+        res.json({ msg: "error: email no proporcionado" })
     }
-    else{
-        const nuevoUsuario = new Usuario({
-            email: req.body.email,
-            password: req.body.password,
-        })
-        await nuevoUsuario.save()
+    else {
+        await crearUsuario(req.body.email.trim(), req.body.password)
 
-        res.json({msg: "usuario creado"})
+        res.json({ msg: "usuario creado" })
     }
 
 })

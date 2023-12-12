@@ -11,7 +11,7 @@ app.use(bodyParser.json())
 
 
 
-mongoose.connect('mongodb+srv://itsosmartine:cy8pzsQ0wXJgxJf2@cluster0.fabyljk.mongodb.net/electrosa',{
+mongoose.connect('mongodb+srv://itsosmartinez:cy8pzsQ0wXJgxJf2@cluster0.fabyljk.mongodb.net/electrosa',{
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
