@@ -3,7 +3,7 @@ const express = require('express')
 const router = express.Router()
 
 const { buscarPorId, buscarTodos, crearUsuario } = require('../controllers/usuario.controller')
-const { validarCrearUsuario } = require('../helpers/validadores')
+const { middlewareCrearUsuario, middlwareEmailValido } = require('../middlwares/usuario.middlwares')
 
 router.get("/", async (req, res) => {
     try {
@@ -30,20 +30,13 @@ router.get("/:id", async (req, res) => {
 
 })
 
-router.post("/", async (req, res) => {
-    const resultadoValidacion = validarCrearUsuario(req.body)
-
-    if (resultadoValidacion.valido) {
-        try {
-            await crearUsuario(req.body.email.trim(), req.body.password)
-            res.json({ msg: "usuario creado" })
-        } catch (error) {
-            console.log(error)
-            res.status(500).json({ msg: "error interno en el servidor" })
-        }
-    }
-    else {
-        res.status(400).json({ msg: resultadoValidacion.mensaje })
+router.post("/", middlewareCrearUsuario, middlwareEmailValido, async (req, res) => {
+    try {
+        await crearUsuario(req.body.email.trim(), req.body.password)
+        res.json({ msg: "usuario creado" })
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ msg: "error interno en el servidor" })
     }
 })
 
