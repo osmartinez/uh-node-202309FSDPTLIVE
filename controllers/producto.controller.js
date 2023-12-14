@@ -5,6 +5,12 @@ async function buscarTodos(){
     return productos
 }
 
+async function buscarTodosQueContengan(nombre,marca){
+    const productos = await Producto.find( { nombre: { "$regex": nombre, "$options": "i" },
+                                             marca: { "$regex": marca, "$options": "i" },})
+    return  productos
+}
+
 async function buscarPorId(id){
     const productoEncontrado = await Producto.findById(id)
     return productoEncontrado
@@ -39,4 +45,5 @@ module.exports  = {
     crearProducto,
     eliminarProducto,
     modificarProducto,
+    buscarTodosQueContengan,
 }

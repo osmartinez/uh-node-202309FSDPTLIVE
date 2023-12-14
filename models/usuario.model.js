@@ -11,6 +11,10 @@ const usuarioSchema = new Schema({
         type: String,
         required: true,
     },
+    rol:{
+        type: String,
+        required: true,
+    }
 })
 
 const Usuarios = mongoose.model("usuarios",usuarioSchema)

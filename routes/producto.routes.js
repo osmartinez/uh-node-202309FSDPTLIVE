@@ -1,20 +1,29 @@
 const express = require('express')
 const router = express.Router()
 
-const { buscarTodos, buscarPorId, crearProducto, eliminarProducto, modificarProducto } = require('../controllers/producto.controller')
+const { buscarTodos, buscarPorId, crearProducto, eliminarProducto, modificarProducto, buscarTodosQueContengan } = require('../controllers/producto.controller')
 
 const { validarCrearProducto } = require('../helpers/validadores')
 
 router.get("/", async (req, res) => {
     try {
-        const productos = await buscarTodos()
+        let productos = []
+        if (req.query.nombreContiene || req.query.marcaContiene) {
+            const nombre = req.query.nombreContiene ? req.query.nombreContiene : ""
+            const marca = req.query.marcaContiene ? req.query.marcaContiene : ""
+            productos = await buscarTodosQueContengan(nombre, marca)
+        }
+        else {
+            productos = await buscarTodos()
+        }
+
         res.json(productos)
     } catch (error) {
         // logging
         console.log(String(error))
-        res.status(500).json({msg: "error interno "})
+        res.status(500).json({ msg: "error interno " })
     }
-   
+
 })
 
 //electrosa.com/login -> acceder los clientes
@@ -30,7 +39,7 @@ router.get("/:id", async (req, res) => {
             res.status(404).json({ msg: 'error: producto no encontado' })
         }
     } catch (error) {
-        res.status(500).json({msg: 'error interno'+String(error)})
+        res.status(500).json({ msg: 'error interno' + String(error) })
     }
 
 

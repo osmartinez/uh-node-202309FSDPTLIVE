@@ -2,12 +2,18 @@ const express = require('express')
 
 const router = express.Router()
 
-const { buscarPorId, buscarTodos, crearUsuario } = require('../controllers/usuario.controller')
-const { middlewareCrearUsuario, middlwareEmailValido } = require('../middlwares/usuario.middlwares')
+const { buscarPorId, buscarTodos, crearUsuario, login, buscarTodosPorMail } = require('../controllers/usuario.controller')
+const { middlewareCrearUsuario, middlwareEmailValido, estaLoggeado, esAdmin } = require('../middlwares/usuario.middlwares')
 
 router.get("/", async (req, res) => {
     try {
-        const usuarios = await buscarTodos()
+        let usuarios = []
+        if(req.query.email){
+            usuarios = await buscarTodosPorMail(req.query.email)
+        }
+        else{
+            usuarios = await buscarTodos()
+        }
         res.json(usuarios)
     } catch (error) {
         res.status(500).json({ msg: "error interno en el servidor" })
@@ -38,6 +44,27 @@ router.post("/", middlewareCrearUsuario, middlwareEmailValido, async (req, res) 
         console.log(error)
         res.status(500).json({ msg: "error interno en el servidor" })
     }
+})
+
+router.post("/login", async (req,res)=>{
+    try{
+        const resultado = await login(req.body.email, req.body.password)
+        res.json({token: resultado.token, msg: resultado.msg})
+    }catch(error){
+        res.status(500).json({ msg: "error interno en el servidor" })
+    }
+})
+
+router.get("/zona-privada/perfil/:id", estaLoggeado , async(req,res)=>{
+
+    const usuarioEncontrado = await buscarPorId(req.params.id)
+
+    res.json({msg: 'bienvenido a tu perfil '+ usuarioEncontrado.email})
+})
+
+
+router.get("/zona-admin/home",esAdmin,async(req,res)=>{
+    res.json({msg: 'hola admin!'})
 })
 
 module.exports = router
