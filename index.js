@@ -1,3 +1,4 @@
+require('dotenv').config()
 const express = require('express')
 const bodyParser = require('body-parser')
 const usuarioRouter = require('./routes/usuario.routes')
@@ -11,8 +12,10 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
 
+app.set("secretKey", process.env.JWTSECRET)
 
-mongoose.connect('mongodb+srv://itsosmartinez:cy8pzsQ0wXJgxJf2@cluster0.fabyljk.mongodb.net/electrosa',{
+
+mongoose.connect(process.env.CONNECTIONSTRING,{
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
@@ -33,4 +36,4 @@ app.use('/pedidos', pedidoRouter)
 // importar usuario routes
 app.use('/usuarios',usuarioRouter)
 
-app.listen(3000)
+app.listen(process.env.PORT)
