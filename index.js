@@ -2,6 +2,7 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const usuarioRouter = require('./routes/usuario.routes')
 const productoRouter = require('./routes/producto.routes')
+const pedidoRouter = require('./routes/pedido.routes')
 const mongoose = require('mongoose');
 
 const app = express()
@@ -26,6 +27,8 @@ mongoose.connect('mongodb+srv://itsosmartinez:cy8pzsQ0wXJgxJf2@cluster0.fabyljk.
 
 // importar producto routes
 app.use('/productos',productoRouter)
+
+app.use('/pedidos', pedidoRouter)
 
 // importar usuario routes
 app.use('/usuarios',usuarioRouter)
