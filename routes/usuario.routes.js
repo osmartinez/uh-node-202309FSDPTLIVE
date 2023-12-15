@@ -56,9 +56,7 @@ router.post("/login", async (req,res)=>{
 })
 
 router.get("/zona-privada/perfil/:id", estaLoggeado , async(req,res)=>{
-
     const usuarioEncontrado = await buscarPorId(req.params.id)
-
     res.json({msg: 'bienvenido a tu perfil '+ usuarioEncontrado.email})
 })
 
