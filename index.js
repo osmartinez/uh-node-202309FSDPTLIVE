@@ -4,6 +4,7 @@ const bodyParser = require('body-parser')
 const usuarioRouter = require('./routes/usuario.routes')
 const productoRouter = require('./routes/producto.routes')
 const pedidoRouter = require('./routes/pedido.routes')
+const indexRouter = require('./routes/index.routes')
 const mongoose = require('mongoose');
 
 const app = express()
@@ -28,6 +29,10 @@ mongoose.connect(process.env.CONNECTIONSTRING,{
 // ARQUITECTURA LIMPIA (CLEAN ARCHITECTURE)
 
 
+
+
+app.use('/', indexRouter)
+
 // importar producto routes
 app.use('/productos',productoRouter)
 
@@ -35,5 +40,6 @@ app.use('/pedidos', pedidoRouter)
 
 // importar usuario routes
 app.use('/usuarios',usuarioRouter)
+
 
 app.listen(process.env.PORT)
