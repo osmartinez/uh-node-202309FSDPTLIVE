@@ -5,6 +5,7 @@ const usuarioRouter = require('./routes/usuario.routes')
 const productoRouter = require('./routes/producto.routes')
 const pedidoRouter = require('./routes/pedido.routes')
 const indexRouter = require('./routes/index.routes')
+const versionRouter = require('./routes/version.routes')
 const mongoose = require('mongoose');
 
 const app = express()
@@ -32,6 +33,7 @@ mongoose.connect(process.env.CONNECTIONSTRING,{
 
 
 app.use('/', indexRouter)
+app.use('/v', versionRouter)
 
 // importar producto routes
 app.use('/productos',productoRouter)
