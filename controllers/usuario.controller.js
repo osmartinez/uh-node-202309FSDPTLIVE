@@ -2,32 +2,34 @@
 const Usuario = require('../models/usuario.model')
 const jwt = require('jsonwebtoken')
 require('dotenv').config()
+const { encriptar, comprobar } = require('../helpers/encriptacion')
 
 
-async function buscarTodos(){
+async function buscarTodos() {
     const usuarios = await Usuario.find()
     return usuarios
 }
 
-async function buscarTodosPorMail(mail){
-    const usuarios = await Usuario.find({email: mail})
+async function buscarTodosPorMail(mail) {
+    const usuarios = await Usuario.find({ email: mail })
     return usuarios
 }
 
-async function buscarUnoPorMail(mail){
-    const usuarioEncontrado = await Usuario.findOne({email: mail})
+async function buscarUnoPorMail(mail) {
+    const usuarioEncontrado = await Usuario.findOne({ email: mail })
     return usuarioEncontrado
 }
 
-async function buscarPorId(id){
+async function buscarPorId(id) {
     const usuarioEncontrado = await Usuario.findById(id)
     return usuarioEncontrado
 }
 
-async function crearUsuario(email,pwd,rol){
+async function crearUsuario(email, pwd, rol) {
+    const hash = await encriptar(pwd)
     const nuevoUsuario = new Usuario({
         email: email,
-        password: pwd,
+        password: hash,
         rol: rol,
     })
 
@@ -37,20 +39,21 @@ async function crearUsuario(email,pwd,rol){
     return nuevoUsuario
 }
 
-async function login(mail, pwd){
-    const usuarioEncontrado = await Usuario.findOne({email: mail})
+async function login(mail, pwd) {
+    const usuarioEncontrado = await Usuario.findOne({ email: mail })
 
-    if(usuarioEncontrado){
-        if(usuarioEncontrado.password === pwd){
+    if (usuarioEncontrado) {
+        const resultadoComparacion = await comprobar(usuarioEncontrado.password, pwd)
+        if (resultadoComparacion) {
 
-            const token = jwt.sign({ id: usuarioEncontrado._id, name: usuarioEncontrado.email },process.env.JWTSECRET,{expiresIn: '1h'})
-            return{
+            const token = jwt.sign({ id: usuarioEncontrado._id, name: usuarioEncontrado.email }, process.env.JWTSECRET, { expiresIn: '1h' })
+            return {
                 usuario: usuarioEncontrado,
                 token: token,
                 msg: null,
             }
         }
-        else{
+        else {
             return {
                 usuario: null,
                 token: null,
@@ -58,7 +61,7 @@ async function login(mail, pwd){
             }
         }
     }
-    else{
+    else {
         return {
             usuario: null,
             token: null,
