@@ -1,7 +1,7 @@
 const { validarCrearUsuario } = require('../helpers/validadores')
 const jwt = require('jsonwebtoken')
 require('dotenv').config()
-const { buscarPorId } = require('../controllers/usuario.controller')
+const { buscarPorId, buscarUnoPorMail } = require('../controllers/usuario.controller')
 
 
 function middlewareCrearUsuario(req, res, next) {
@@ -66,11 +66,22 @@ async function esAdmin(req,res,next){
     }
 }
 
+async function esEmailDuplicado(req,res,next){
+    const usuarioMismoMail = await buscarUnoPorMail(req.body.email)
+    if(usuarioMismoMail){
+        res.status(400).json({msg: "email duplicado"})
+    }
+    else{
+        next()
+    }
+}
+
 
 
 module.exports = {
     middlewareCrearUsuario,
     middlwareEmailValido,
     estaLoggeado,
-    esAdmin
+    esAdmin,
+    esEmailDuplicado
 }

@@ -14,16 +14,23 @@ async function buscarTodosPorMail(mail){
     return usuarios
 }
 
+async function buscarUnoPorMail(mail){
+    const usuarioEncontrado = await Usuario.findOne({email: mail})
+    return usuarioEncontrado
+}
+
 async function buscarPorId(id){
     const usuarioEncontrado = await Usuario.findById(id)
     return usuarioEncontrado
 }
 
-async function crearUsuario(email,pwd){
+async function crearUsuario(email,pwd,rol){
     const nuevoUsuario = new Usuario({
         email: email,
-        password: pwd
+        password: pwd,
+        rol: rol,
     })
+
 
     await nuevoUsuario.save()
 
@@ -66,5 +73,6 @@ module.exports = {
     crearUsuario,
     login,
     buscarTodosPorMail,
+    buscarUnoPorMail
 }
 
